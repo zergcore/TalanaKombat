@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  python_app:
+    build: .
+    image: python_3_9
+    container_name: python_talanakombat
+    command: python main.py
