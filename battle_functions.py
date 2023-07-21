@@ -1,5 +1,6 @@
 from utils import get_punch_in_string, remove_empty_strings, validate_move, validate_punch
 
+#Energy table for each player
 ENERGY_TABLE = {
     1: {
       "DSDP": {
@@ -39,27 +40,63 @@ ENERGY_TABLE = {
     }
   }
 
+# Name of each player
 PLAYER_NAMES = {
     1: "Tonyn",
     2: "Arnaldor",
 }
 
 # Calculate priority of the players
-def cal_total_buttons(moves, punches):
+def cal_total_buttons(moves: list, punches: list):
+  """
+  This function calculates how many buttons a player used.
+  Args:
+    moves (list): The moves of the player.
+    punches (list): The punches of the player.
+  Returns:
+    total_buttons (int): The total buttons of the player used.
+  """
   buttons = "".join(moves) + "".join(punches)
   return len(buttons)
 
-def cal_total_moves(moves):
+def cal_total_moves(moves: list):
+  """
+  This function calculates how many moves a player made.
+  Args:
+    moves (list): The moves of the player.
+  Returns:
+    total_moves (int): The total moves of the player.
+  """
+
   return len("".join(moves))
 
-def cal_total_punches(player, moves, punches):
+def cal_total_punches(player: int, moves: list, punches: list):
+  """
+  This function calculates how many punches a player made.
+  Args:
+    player (int): The player.
+    moves (list): The moves of the player.
+    punches (list): The punches of the player.
+  Returns:
+    total_punches (int): The total punches of the player.
+  """
+
   possible_punches = ENERGY_TABLE[player].keys()
   punches = list(zip(moves, punches))
   final_punches = [get_punch_in_string(move+punch, possible_punches) for move, punch in punches]
   final_punches = remove_empty_strings(final_punches)
   return len(final_punches)
 
-def cal_priority(player1, player2):
+def cal_priority(player1: dict, player2:dict):
+  """
+  This function is responsible of returning the priority of the players. (who plays first)
+  Args:
+    player1 (dict): The player 1.
+    player2 (dict): The player 2.
+  Returns:
+    priority (int): The priority of the players.
+  """
+
   p1_moves = player1["movimientos"]
   p2_moves = player2["movimientos"]
   p1_punches = player1["golpes"]
@@ -89,6 +126,15 @@ def cal_priority(player1, player2):
 
 # Execute movements and punches
 def execute_move(player: int, move: str, punch: str):
+  """
+  This function is responsible of returning the energy taken from the other player when the indicated one makes certain combination of moves and punches.
+  Args:
+    player (int): The player number.
+    move (str): The move.
+    punch (str): The punch.
+  Returns:
+    expended_energy (int): The energy taken from the other player.
+  """
   move_key = get_punch_in_string(str(move)+str(punch), ENERGY_TABLE[player].keys())
   if move_key:
     expended_energy = ENERGY_TABLE.get(player).get(move_key, 0).get("energy", 0)
@@ -98,7 +144,16 @@ def execute_move(player: int, move: str, punch: str):
 
 
 #Fight Narrative
-def generate_narration(player, move, punch):
+def generate_narration(player: int, move: str, punch: str):
+  """
+  This function generates the narration of the fight.
+  Args:
+    player (int): The player number.
+    move (str): The move.
+    punch (str): The punch.
+  Returns:
+    narration (str): The narration.
+  """
 
   player_name = PLAYER_NAMES.get(player, "")
   other_player = PLAYER_NAMES.get(2 if player == 1 else 1, "")
@@ -122,7 +177,17 @@ def generate_narration(player, move, punch):
 
 
 # Play
-def fight_combat(player1, player2):
+def fight_combat(player1: dict, player2:dict):
+  """
+  This function is the main function of the game. It is responsible for the
+  execution of the moves and punches.
+  Args:
+    player1 (dict): The first player.
+    player2 (dict): The second player.
+  Returns:
+    narration (list): The list of the narrations.
+  """
+
   attacker = cal_priority(player1, player2)
 
   p1_energy=6
